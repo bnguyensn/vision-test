@@ -9,6 +9,8 @@ readme = "README.md"
 python = "^3.11"
 opencv-python = "^4.8.0.76"
 
+[tool.poetry.scripts]
+run-vision-test = "runner:main"
 
 [build-system]
 requires = ["poetry-core"]

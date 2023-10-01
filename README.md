@@ -16,4 +16,6 @@ This is used to detect motion. It consists of 2 main steps:
 - Background initialization: an initial model of the background is computed.
 - Background update: the model is updated to adapt to possible changes in the scene.
 
+## How to use
 
+Run the project using `poetry run run-vision-test`. This script is defined in `pyproject.toml`.
