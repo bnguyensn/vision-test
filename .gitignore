@@ -1,6 +1,7 @@
 .idea
 poetry.toml
 data
+output
 
 ### macOS template
 # General
