@@ -1,6 +1,8 @@
 import cv2 as cv
 import argparse
 
+DEFAULT_MOVEMENT_THRESHOLD = 1000
+
 
 def get_movements():
     # Set up parser
@@ -17,7 +19,8 @@ def get_movements():
 
     # Setup alogrithm, either KNN or MOG2
 
-    backSub = cv.createBackgroundSubtractorMOG2(varThreshold=1000)
+    backSub = cv.createBackgroundSubtractorMOG2(
+        varThreshold=DEFAULT_MOVEMENT_THRESHOLD)
     # if args.algo == 'MOG2':
     #     backSub = cv.createBackgroundSubtractorMOG2(varThreshold=100)
     # else:
@@ -30,6 +33,7 @@ def get_movements():
         print('Unable to open: ' + args.input)
         exit(0)
 
+    # Store the timestamps when intensive movements happen
     intensive_movements = []
 
     while True:
