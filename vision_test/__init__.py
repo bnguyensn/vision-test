@@ -22,23 +22,30 @@ def extract_clip(input_video, output_clip, start_time, end_time):
         output_clip).run()
 
 
-def get_movements():
-    # Set up parser
-
+def parse_args():
     parser = argparse.ArgumentParser(description='This program shows how to use background subtraction methods provided by \
-     OpenCV. You can process both videos and images.')
+         OpenCV. You can process both videos and images.')
+
     parser.add_argument('--input', type=str,
                         help='Path to a video or a sequence of image.',
                         default=DEFAULT_INPUT_FILE)
     parser.add_argument('--algo', type=str,
                         help='Background subtraction method (KNN, MOG2).',
                         default='MOG2')
-    args = parser.parse_args()
+    parser.add_argument('--mvmt', type=int,
+                        help='Movement threshold.',
+                        default=DEFAULT_MOVEMENT_THRESHOLD)
 
-    # Setup alogrithm, either KNN or MOG2
+    return parser.parse_args()
 
-    backSub = cv.createBackgroundSubtractorMOG2(
-        varThreshold=DEFAULT_MOVEMENT_THRESHOLD)
+
+def get_movements():
+    args = parse_args()
+
+    # Setup algorithm, either KNN or MOG2
+
+    back_sub = cv.createBackgroundSubtractorMOG2(
+        varThreshold=args.mvmt)
     # if args.algo == 'MOG2':
     #     backSub = cv.createBackgroundSubtractorMOG2(varThreshold=100)
     # else:
@@ -68,10 +75,10 @@ def get_movements():
             break
 
         # Apply the background subtraction algorithm to the frame
-        fgMask = backSub.apply(frame)
+        fg_mask = back_sub.apply(frame)
 
         # Count white pixels
-        white_pixels = cv.countNonZero(fgMask)
+        white_pixels = cv.countNonZero(fg_mask)
 
         # Show the white pixels count
         cv.putText(frame, str(white_pixels), (15, 35),
@@ -101,7 +108,7 @@ def get_movements():
 
         # Show the frame and the fg mask
         cv.imshow('Frame', frame)
-        cv.imshow('FG Mask', fgMask)
+        cv.imshow('FG Mask', fg_mask)
 
         # Wait for 30 milliseconds, if the user presses 'q' or 'ESC', exit
         keyboard = cv.waitKey(30)

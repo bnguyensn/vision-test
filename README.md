@@ -19,3 +19,10 @@ This is used to detect motion. It consists of 2 main steps:
 ## How to use
 
 Run the project using `poetry run run-vision-test`. This script is defined in `pyproject.toml`.
+
+You can provide arguments to the program. All arguments are optional.
+
+```bash
+# Run the program on 'path/to/input.mp4' video, with a movement threshold of 1000.
+$ poetry run run-vision-test --input "path/to/input.mp4" --mvmt 1000
+```
