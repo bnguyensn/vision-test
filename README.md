@@ -18,6 +18,22 @@ This is used to detect motion. It consists of 2 main steps:
 
 ## How to use
 
+### Python
+
+Please install Python first to your system. You can download it from [here](https://www.python.org/downloads/).
+
+Poetry specifies the Python version of the project. See `pyproject.toml`, section `tool.poetry.dependencies`. If you run into version problems e.g. "current Python version is not allowed by the project", you can change Python version with `poetry env use /path/to/python` or `poetry env use python3.12` or `poetry env use 3.12` if Python 3.12 is available in your `PATH`. See more [here](https://python-poetry.org/docs/managing-environments/). What this does, is it lets Poetry re-create the virtualenv folder.
+
+Poetry can be configured using an (uncommitted) `poetry.toml` file. This controls things like: virtual environment location, etc. See more [here](https://python-poetry.org/docs/configuration).
+
+### Virtual environment
+
+By default, Poetry creates a virtual environment in `{cache-dir}/virtualenvs`. [`{cache-dir}`](https://python-poetry.org/docs/configuration/#cache-dir) has a default location e.g. on Windows, it's `C:\Users\{user}\AppData\Local\pypoetry\Cache`. It's possible to create virtualenv inside this project's root directory using [`virtualenvs.in-project`](https://python-poetry.org/docs/configuration/#virtualenvsin-project).
+
+To find out where this project's virtual environment is located, run `poetry env info --path`.
+
+Initialise the project using `poetry install`. This will let Poetry install dependencies and update the `poetry.lock` file.
+
 Run the project using `poetry run run-vision-test`. This script is defined in `pyproject.toml`.
 
 You can provide arguments to the program. All arguments are optional.
