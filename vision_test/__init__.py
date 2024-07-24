@@ -2,10 +2,12 @@ import cv2 as cv
 import argparse
 import ffmpeg
 import json
+from pathlib import Path
 
 DEFAULT_MOVEMENT_THRESHOLD = 1000
 DEFAULT_WHITE_PIXEL_COUNT = 3000
-DEFAULT_INPUT_FILE = 'data/video_trimmed.mp4'
+DEFAULT_INPUT_FILE = Path('data/video_trimmed.mp4')
+DEFAULT_OUTPUT_DIR = Path('output')
 DEFAULT_MOVEMENT_TIME_ADDITION = 4
 
 
@@ -26,7 +28,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='This program shows how to use background subtraction methods provided by \
          OpenCV. You can process both videos and images.')
 
-    parser.add_argument('--input', type=str,
+    parser.add_argument('--input', type=Path,
                         help='Path to a video or a sequence of image.',
                         default=DEFAULT_INPUT_FILE)
     parser.add_argument('--algo', type=str,
@@ -53,9 +55,9 @@ def get_movements():
 
     # Create a video capture object
 
-    capture = cv.VideoCapture(cv.samples.findFileOrKeep(args.input))
+    capture = cv.VideoCapture(cv.samples.findFileOrKeep(str(args.input)))
     if not capture.isOpened():
-        print('Unable to open: ' + args.input)
+        print('Unable to open: ' + str(args.input))
         exit(0)
 
     # Video fps
@@ -122,7 +124,9 @@ def get_movements():
 
     for i, movement in enumerate(intensive_movements):
         print(f"Generating clip {i + 1}...")
-        extract_clip(DEFAULT_INPUT_FILE, f"output/clip_{i + 1}.mp4",
+        DEFAULT_OUTPUT_DIR.mkdir(exist_ok=True)
+        output_path = DEFAULT_OUTPUT_DIR / f"clip_{i + 1}.mp4"
+        extract_clip(str(DEFAULT_INPUT_FILE), str(output_path),
                      movement["from"] * 1000, movement["to"] * 1000)
 
     print("Done!")
