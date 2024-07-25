@@ -14,7 +14,7 @@ future = "0.18.3"
 
 [tool.poetry.scripts]
 run-vision-test = "runner:main"
-cv-playground = "playground:main"
+cv-playground = "cv_playground:main"
 
 [build-system]
 requires = ["poetry-core"]

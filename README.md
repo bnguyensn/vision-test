@@ -46,3 +46,13 @@ You can provide arguments to the program. All arguments are optional.
 # Run the program on 'path/to/input.mp4' video, with a movement threshold of 1000.
 $ poetry run run-vision-test --input "path/to/input.mp4" --mvmt 1000
 ```
+
+## Miscellaneous
+
+### CV playground
+
+Try this command:
+
+```bash
+$ poetry run cv-playground
+```

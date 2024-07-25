@@ -35,3 +35,7 @@ def resave_img():
     if k == ord('s'):
         output_path = Path(__file__).parent / './starry_night.png'
         cv.imwrite(str(output_path), img)
+
+
+def main():
+    resave_img()
