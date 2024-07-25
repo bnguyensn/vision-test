@@ -18,6 +18,10 @@ This is used to detect motion. It consists of 2 main steps:
 
 ## How to use
 
+### IDE
+
+If using PyCharm, make sure you set up your Python interpreter so that the IDE correctly detects your packages. See [here](https://www.jetbrains.com/help/pycharm/package-installation-issues.html#terminal).
+
 ### Python
 
 Please install Python first to your system. You can download it from [here](https://www.python.org/downloads/).

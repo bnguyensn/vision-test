@@ -9,9 +9,12 @@ readme = "README.md"
 python = "3.11.3"
 opencv-python = "4.8.0.76"
 ffmpeg-python = "0.2.0"
+numpy = "1.25.2"
+future = "0.18.3"
 
 [tool.poetry.scripts]
 run-vision-test = "runner:main"
+cv-playground = "playground:main"
 
 [build-system]
 requires = ["poetry-core"]
