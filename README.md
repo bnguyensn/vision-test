@@ -16,6 +16,15 @@ This is used to detect motion. It consists of 2 main steps:
 - Background initialization: an initial model of the background is computed.
 - Background update: the model is updated to adapt to possible changes in the scene.
 
+### Fine-tuning
+
+Parameters to fine-tune:
+- Foreground mask threshold
+- History
+- Variance threshold
+- Minimum and maximum "heavy movement" segment length
+- Frame rate
+
 ## How to use
 
 ### IDE
