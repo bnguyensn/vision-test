@@ -53,7 +53,7 @@ You can provide arguments to the program. All arguments are optional.
 
 ```bash
 # Run the program on 'path/to/input.mp4' video, with a movement threshold of 1000.
-$ poetry run run-vision-test --input "path/to/input.mp4" --mvmt 1000
+$ poetry run run-vision-test --input "data/video.mp4" --mvmt 1000 --history 500 --shadows False
 ```
 
 ## Miscellaneous

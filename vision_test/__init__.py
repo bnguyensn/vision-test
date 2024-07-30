@@ -4,7 +4,10 @@ import ffmpeg
 import json
 from pathlib import Path
 
-DEFAULT_MOVEMENT_THRESHOLD = 1000
+DEFAULT_MOG2_VAR_THRESHOLD = 1000
+DEFAULT_MOG2_HISTORY = 500
+DEFAULT_MOG2_SHADOWS = False
+
 DEFAULT_WHITE_PIXEL_COUNT = 3000
 DEFAULT_INPUT_FILE = Path('data/video_trimmed.mp4')
 DEFAULT_OUTPUT_DIR = Path('output')
@@ -35,8 +38,15 @@ def parse_args():
                         help='Background subtraction method (KNN, MOG2).',
                         default='MOG2')
     parser.add_argument('--mvmt', type=int,
-                        help='Movement threshold.',
-                        default=DEFAULT_MOVEMENT_THRESHOLD)
+                        help='Movement threshold. Increase to reduce sensitivity, but might miss subtle movements.',
+                        default=DEFAULT_MOG2_VAR_THRESHOLD)
+    parser.add_argument('--history', type=int,
+                        help='How many frames are used to update the background model. Increase to reduce false \
+                             positives at the cost of missing fast movements.',
+                        default=DEFAULT_MOG2_HISTORY)
+    parser.add_argument('--shadows', type=bool,
+                        help='If true, will try to detect shadows.',
+                        default=DEFAULT_MOG2_SHADOWS)
 
     return parser.parse_args()
 
@@ -47,7 +57,9 @@ def get_movements():
     # Setup algorithm, either KNN or MOG2
 
     back_sub = cv.createBackgroundSubtractorMOG2(
-        varThreshold=args.mvmt)
+        history=args.history,
+        varThreshold=args.mvmt,
+        detectShadows=args.shadows)
     # if args.algo == 'MOG2':
     #     backSub = cv.createBackgroundSubtractorMOG2(varThreshold=100)
     # else:
