@@ -11,9 +11,7 @@ opencv-python = "4.8.0.76"
 ffmpeg-python = "0.2.0"
 numpy = "1.25.2"
 future = "0.18.3"
-flask = "3.0.3"
-gunicorn = "22.0.0"
-werkzeug = "3.0.3"
+functions-framework = "3.8.1"
 
 [tool.poetry.scripts]
 run-vision-test = "runner:main"

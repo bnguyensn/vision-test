@@ -1,16 +1,7 @@
-import os
-
-from flask import Flask
-
-app = Flask(__name__)
+import functions_framework
+from cloudevents.http.event import CloudEvent
 
 
-@app.route("/")
-def hello_world():
-    """Example Hello World route."""
-    name = os.environ.get("NAME", "World")
-    return f"Hello {name}!"
-
-
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
+@functions_framework.cloud_event
+def vision_trigger_from_storage(cloud_event: CloudEvent) -> None:
+    print(f"Received event with ID: {cloud_event['id']} and data {cloud_event.data}")

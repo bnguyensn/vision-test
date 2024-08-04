@@ -39,7 +39,7 @@ Poetry specifies the Python version of the project. See `pyproject.toml`, sectio
 
 Poetry can be configured using an (uncommitted) `poetry.toml` file. This controls things like: virtual environment location, etc. See more [here](https://python-poetry.org/docs/configuration).
 
-### Virtual environment
+### Python virtual environment
 
 By default, Poetry creates a virtual environment in `{cache-dir}/virtualenvs`. [`{cache-dir}`](https://python-poetry.org/docs/configuration/#cache-dir) has a default location e.g. on Windows, it's `C:\Users\{user}\AppData\Local\pypoetry\Cache`. It's possible to create virtualenv inside this project's root directory using [`virtualenvs.in-project`](https://python-poetry.org/docs/configuration/#virtualenvsin-project).
 
@@ -55,6 +55,10 @@ You can provide arguments to the program. All arguments are optional.
 # Run the program on 'path/to/input.mp4' video, with a movement threshold of 1000.
 $ poetry run run-vision-test --input "data/video.mp4" --mvmt 1000 --history 500 --shadows False
 ```
+
+## Deployment
+
+This service is meant to be triggered whenever there is a new long-form video uploaded to storage. The trigger is handled via main.py using GCP's `functions_framework`, as this is deployed as a Google Cloud Function.
 
 ## Miscellaneous
 
