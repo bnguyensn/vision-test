@@ -47,7 +47,9 @@ To find out where this project's virtual environment is located, run `poetry env
 
 Initialise the project using `poetry install`. This will let Poetry install dependencies and update the `poetry.lock` file.
 
-Run the project using `poetry run run-vision-test`. This script is defined in `pyproject.toml`.
+### The main program
+
+Run the main program using `poetry run run-vision-test`. This script is defined in `pyproject.toml`.
 
 You can provide arguments to the program. All arguments are optional.
 

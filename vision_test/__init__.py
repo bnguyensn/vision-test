@@ -74,6 +74,7 @@ def get_movements():
 
     # Video fps
     fps = capture.get(cv.CAP_PROP_FPS)
+    total_frames = int(capture.get(cv.CAP_PROP_FRAME_COUNT))
 
     # Store the timestamps when intensive movements happen
     intensive_movements = []
@@ -82,6 +83,9 @@ def get_movements():
     # the same intensive movement twice.
     previous_intensive_movements_frame_end = 0
 
+    print(f"Processing {total_frames:,} frames")
+
+    frame_count = 0
     while True:
         # capture.read() grabs, decodes, and returns the next video frame
         ret, frame = capture.read()
@@ -112,17 +116,24 @@ def get_movements():
                      "to": to_time})
                 previous_intensive_movements_frame_end = to_time
 
+        # Log progress
+        frame_count += 1
+        if frame_count % (total_frames // 10) == 0:
+            print(f"Processing: {frame_count / total_frames * 100:.2f}% complete")
+
+        # Uncomment the below to show the video.
+
         # Draw a rectangle on the frame, starting at (10, 2) and ending at
         # (100, 20)
-        cv.rectangle(frame, (10, 2), (100, 20), (255, 0, 0), -1)
+        # cv.rectangle(frame, (10, 2), (100, 20), (255, 0, 0), -1)
 
         # Add the current frame number in the top left corner
-        cv.putText(frame, str(capture.get(cv.CAP_PROP_POS_FRAMES)), (15, 15),
-                   cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
+        # cv.putText(frame, str(capture.get(cv.CAP_PROP_POS_FRAMES)), (15, 15),
+        #            cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
 
         # Show the frame and the fg mask
-        cv.imshow('Frame', frame)
-        cv.imshow('FG Mask', fg_mask)
+        # cv.imshow('Frame', frame)
+        # cv.imshow('FG Mask', fg_mask)
 
         # Wait for 30 milliseconds, if the user presses 'q' or 'ESC', exit
         keyboard = cv.waitKey(30)
