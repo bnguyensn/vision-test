@@ -71,3 +71,15 @@ Try this command:
 ```bash
 $ poetry run cv-playground
 ```
+
+### `ffmpeg`
+
+#### Trimming a video
+
+```bash
+# -i: input file
+# -ss: start time
+# -t: duration
+# -c: codec. "copy" means no re-encoding is done.
+$ ffmpeg -i input.mp4 -ss 00:00:03 -t 00:00:08 -c copy output.mp4
+```

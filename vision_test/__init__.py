@@ -136,9 +136,9 @@ def get_movements():
         # cv.imshow('FG Mask', fg_mask)
 
         # Wait for 30 milliseconds, if the user presses 'q' or 'ESC', exit
-        keyboard = cv.waitKey(30)
-        if keyboard == 'q' or keyboard == 27:
-            break
+        # keyboard = cv.waitKey(30)
+        # if keyboard == 'q' or keyboard == 27:
+        #     break
 
     print(f"Generating {len(intensive_movements)} clips...")
 
