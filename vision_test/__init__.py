@@ -12,6 +12,19 @@ DEFAULT_WHITE_PIXEL_COUNT = 3000
 DEFAULT_INPUT_FILE = Path('data/video_trimmed.mp4')
 DEFAULT_OUTPUT_DIR = Path('output')
 DEFAULT_MOVEMENT_TIME_ADDITION = 4
+DEFAULT_POST_PROCESS_FRAME_TUNING_ADDITION = 3
+
+
+def record_performance(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        duration = end_time - start_time
+        print(f"{func.__name__} took {duration:.2f} seconds to complete.")
+        return result
+
+    return wrapper
 
 
 def extract_clip(input_video, output_clip, start_time, end_time):
@@ -51,6 +64,7 @@ def parse_args():
     return parser.parse_args()
 
 
+@record_performance
 def get_movements():
     args = parse_args()
 
