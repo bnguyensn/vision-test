@@ -27,6 +27,20 @@ def record_performance(func):
     return wrapper
 
 
+def merge_videos(input_videos, output_video):
+    # Create input streams for each video
+    input_streams = [ffmpeg.input(video) for video in input_videos]
+
+    # Concatenate the input streams
+    concat_stream = ffmpeg.concat(*input_streams, v=1, a=1).node
+
+    # Define the output stream
+    output_stream = ffmpeg.output(concat_stream[0], concat_stream[1], output_video)
+
+    # Run the ffmpeg command
+    ffmpeg.run(output_stream)
+
+
 def extract_clip(input_video, output_clip, start_time, end_time):
     # Convert start_time and end_time from ms to s
     start_time_sec = start_time / 1000
