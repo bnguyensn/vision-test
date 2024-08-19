@@ -21,20 +21,6 @@ def get_timestamp():
     return int(datetime.now().timestamp())
 
 
-def merge_videos(input_videos, output_video):
-    # Create input streams for each video
-    input_streams = [ffmpeg.input(video) for video in input_videos]
-
-    # Concatenate the input streams
-    concat_stream = ffmpeg.concat(*input_streams, v=1, a=1).node
-
-    # Define the output stream
-    output_stream = ffmpeg.output(concat_stream[0], concat_stream[1], output_video)
-
-    # Run the ffmpeg command
-    ffmpeg.run(output_stream)
-
-
 def extract_clip(input_video, output_clip, start_time, end_time):
     # Convert start_time and end_time from ms to s
     start_time_sec = start_time / 1000
@@ -76,9 +62,13 @@ def parse_args():
                              positives at the cost of missing fast movements.',
                         default=DEFAULT_MOG2_HISTORY)
     parser.add_argument('--shadows',
-                        type=bool,
+                        action='store_true',
                         help='If true, will try to detect shadows.',
                         default=DEFAULT_MOG2_SHADOWS)
+    parser.add_argument('--generate-clips',
+                        action='store_true',
+                        help='If true, will automatically generate video clips.',
+                        default=False)
 
     return parser.parse_args()
 
@@ -200,7 +190,8 @@ def get_movements():
 
     print(f'Created {intensive_movements_json_path}')
 
-    generate_clips(intensive_movements_json_path, args.input, "output")
+    if args.generate_clips:
+        generate_clips(intensive_movements_json_path, args.input, "output")
 
     # for i, movement in enumerate(intensive_movements):
     #     print(f"Generating clip {i + 1}...")
