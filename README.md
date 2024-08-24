@@ -31,6 +31,8 @@ Parameters to fine-tune:
 
 If using PyCharm, make sure you set up your Python interpreter so that the IDE correctly detects your packages. See [here](https://www.jetbrains.com/help/pycharm/package-installation-issues.html#terminal).
 
+For example, on a Windows machine, your Python interpreter could live at: `vision-test/.venv/Scripts/python.exe`.
+
 ### Python
 
 Please install Python first to your system. You can download it from [here](https://www.python.org/downloads/).
