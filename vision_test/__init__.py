@@ -1,11 +1,14 @@
-from datetime import datetime
-import cv2 as cv
 import argparse
-import ffmpeg
 import json
+from datetime import datetime
 from pathlib import Path
-from .generate_clips import generate_clips
+
+import cv2 as cv
+import ffmpeg
+
+from .analyze_movements import analyze_movements
 from .decorators import record_performance
+from .generate_single_clip import generate_single_clip
 
 DEFAULT_MOG2_VAR_THRESHOLD = 1000
 DEFAULT_MOG2_HISTORY = 500
@@ -42,7 +45,7 @@ def parse_args():
 
     parser.add_argument('--input',
                         type=str,
-                        help='Path to a video or a sequence of image.',
+                        help='Path to a video.',
                         required=True)
     parser.add_argument('--clip_limit_s',
                         type=int,
@@ -69,6 +72,10 @@ def parse_args():
                         action='store_true',
                         help='If true, will automatically generate video clips.',
                         default=False)
+    parser.add_argument('--movementsjson',
+                        type=str,
+                        help='Path to an intensive movements JSON file. If provided, will always generate clips.',
+                        default="")
 
     return parser.parse_args()
 
@@ -77,8 +84,12 @@ def parse_args():
 def get_movements():
     args = parse_args()
 
-    # Setup algorithm, either KNN or MOG2
+    if args.movementsjson:
+        print(f"Generating clips from {args.movementsjson} and {args.input}...")
+        generate_single_clip(args.movementsjson, args.input, "output/merged_clips")
+        return
 
+    # Setup algorithm, either KNN or MOG2
     back_sub = cv.createBackgroundSubtractorMOG2(
         history=args.history,
         varThreshold=args.mvmt,
@@ -89,109 +100,27 @@ def get_movements():
     #     backSub = cv.createBackgroundSubtractorKNN(varThreshold=100)
 
     # Create a video capture object
-
     capture = cv.VideoCapture(cv.samples.findFileOrKeep(args.input))
     if not capture.isOpened():
         print(f'Unable to open: {args.input}')
         exit(0)
 
-    # Video fps
-    fps = capture.get(cv.CAP_PROP_FPS)
-    total_frames = int(capture.get(cv.CAP_PROP_FRAME_COUNT))
+    # Analyze movements
+    intensive_movements = analyze_movements(capture, back_sub, white_pixel_threshold=DEFAULT_WHITE_PIXEL_COUNT,
+                                            movement_time_addition=DEFAULT_MOVEMENT_TIME_ADDITION,
+                                            post_process_frame_tuning_addition=DEFAULT_POST_PROCESS_FRAME_TUNING_ADDITION)
 
-    # Store the timestamps when intensive movements happen
-    intensive_movements = []
-
-    # Since we're adding some seconds to each start frame, we can't count
-    # the same intensive movement twice.
-    previous_intensive_movements_frame_end = 0
-
-    print(f'Processing {total_frames:,} frames')
-
-    frame_count = 0
-    while True:
-        # capture.read() grabs, decodes, and returns the next video frame
-        ret, frame = capture.read()
-        if frame is None:
-            break
-
-        # Apply the background subtraction algorithm to the frame
-        fg_mask = back_sub.apply(frame)
-
-        # Count white pixels
-        white_pixels = cv.countNonZero(fg_mask)
-
-        # Show the white pixels count
-        # cv.putText(frame, str(white_pixels), (15, 35),
-        #            cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255))
-
-        # Store intensive movements
-        if white_pixels > DEFAULT_WHITE_PIXEL_COUNT:
-            current_frame = int(capture.get(cv.CAP_PROP_POS_FRAMES))
-            current_time_ms = (current_frame * 1000)  # ms
-            current_time_s = int(current_frame / fps)
-
-            current_time = current_time_s
-
-            if not intensive_movements or current_time > intensive_movements[-1]["to"] + DEFAULT_MOVEMENT_TIME_ADDITION:
-                intensive_movements.append({"from": current_time, "to": current_time})
-            else:
-                intensive_movements[-1]["to"] = current_time
-
-            # if current_time > previous_intensive_movements_frame_end:
-            #     to_time = current_time + DEFAULT_MOVEMENT_TIME_ADDITION
-            #     intensive_movements.append(
-            #         {"from": current_time,
-            #          "to": to_time})
-            #     previous_intensive_movements_frame_end = to_time
-
-        # Log progress
-        frame_count += 1
-        if frame_count % (total_frames // 10) == 0:
-            print(f"Processing: {frame_count / total_frames * 100:.2f}% complete")
-
-        # Uncomment the below to show the video.
-
-        # Draw a rectangle on the frame, starting at (10, 2) and ending at
-        # (100, 20)
-        # cv.rectangle(frame, (10, 2), (100, 20), (255, 0, 0), -1)
-
-        # Add the current frame number in the top left corner
-        # cv.putText(frame, str(capture.get(cv.CAP_PROP_POS_FRAMES)), (15, 15),
-        #            cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
-
-        # Show the frame and the fg mask
-        # cv.imshow('Frame', frame)
-        # cv.imshow('FG Mask', fg_mask)
-
-        # Wait for 30 milliseconds, if the user presses 'q' or 'ESC', exit
-        # keyboard = cv.waitKey(30)
-        # if keyboard == 'q' or keyboard == 27:
-        #     break
-
-    # Post-processing
-    for movement in intensive_movements:
-        movement["to"] += DEFAULT_POST_PROCESS_FRAME_TUNING_ADDITION
-    i = 0
-    while i < len(intensive_movements) - 1:
-        if intensive_movements[i]["to"] >= intensive_movements[i + 1]["from"]:
-            intensive_movements[i]["to"] = max(intensive_movements[i]["to"], intensive_movements[i + 1]["to"])
-            del intensive_movements[i + 1]
-        else:
-            i += 1
-
+    # Store movements data
     timestamp = str(get_timestamp())
-    intensive_movements_json_path = f'output/intensive-movements-{str(args.mvmt)}mvmt-{str(args.history)}history-{timestamp}.json'
-    print(
-        f'Finished processing. Total of {len(intensive_movements)} found. Writing intensive-movements.json to {intensive_movements_json_path}')
-
-    with open(intensive_movements_json_path, 'w') as f:
+    intensive_movements_json = f'output/intensive-movements-{timestamp}-{str(args.mvmt)}mvmt-{str(args.history)}history.json'
+    with open(intensive_movements_json, 'w') as f:
         json.dump(intensive_movements, f, indent=4)
+    print(f'Created {intensive_movements_json}')
 
-    print(f'Created {intensive_movements_json_path}')
-
+    # Create video clip (if requested)
     if args.generate_clips:
-        generate_clips(intensive_movements_json_path, args.input, "output")
+        # generate_clips(intensive_movements_json, args.input, "output")
+        generate_single_clip(intensive_movements_json, args.input, "output/merged_clips")
 
     # for i, movement in enumerate(intensive_movements):
     #     print(f"Generating clip {i + 1}...")
@@ -200,4 +129,4 @@ def get_movements():
     #     extract_clip(str(args.input), str(output_path),
     #                  movement["from"] * 1000, movement["to"] * 1000)
 
-    print("Done!")
+    print("✨ Done!")
