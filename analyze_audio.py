@@ -3,7 +3,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from speech_diatrization.analyze_audio import analyze_audio
+from speech_diarization.analyze_audio import analyze_audio
 
 
 def get_timestamp():
