@@ -15,11 +15,19 @@ functions-framework = "3.8.1"
 pyannote-audio = "3.3.1"
 python-dotenv = "1.0.1"
 huggingface-hub = "^0.24.6"
+torch = {version = "^2.4.0+cu124", source = "pytorch-gpu-src"}
+torchvision = {version = "^0.19.0+cu124", source = "pytorch-gpu-src"}
+torchaudio = {version = "^2.4.0+cu124", source = "pytorch-gpu-src"}
 
 [tool.poetry.scripts]
 run-vision-test = "runner:main"
 analyze-audio = "analyze_audio:main"
 cv-playground = "cv_playground:main"
+
+[[tool.poetry.source]]
+name = "pytorch-gpu-src"
+url = "https://download.pytorch.org/whl/cu124"
+priority = "explicit"
 
 [build-system]
 requires = ["poetry-core"]

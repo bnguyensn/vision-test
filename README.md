@@ -49,6 +49,17 @@ To find out where this project's virtual environment is located, run `poetry env
 
 Initialise the project using `poetry install`. This will let Poetry install dependencies and update the `poetry.lock` file.
 
+### pyTorch
+
+Installation: [link](https://pytorch.org/get-started/locally/#windows-installation).
+
+Note that, with Poetry, we need to follow the instructions [here](https://github.com/python-poetry/poetry/issues/7685#issuecomment-1632693935).
+
+```
+$ poetry source add --priority=explicit pytorch-gpu-src https://download.pytorch.org/whl/cu118
+$ poetry add --source pytorch-gpu-src torch torchvision torchaudio
+```
+
 ### The main program
 
 Run the main program using `poetry run run-vision-test`. This script is defined in `pyproject.toml`.
