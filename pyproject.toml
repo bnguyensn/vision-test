@@ -14,9 +14,11 @@ future = "0.18.3"
 functions-framework = "3.8.1"
 pyannote-audio = "3.3.1"
 python-dotenv = "1.0.1"
+huggingface-hub = "^0.24.6"
 
 [tool.poetry.scripts]
 run-vision-test = "runner:main"
+analyze-audio = "analyze_audio:main"
 cv-playground = "cv_playground:main"
 
 [build-system]
