@@ -7,12 +7,15 @@ from dotenv import load_dotenv
 from pyannote.audio import Pipeline
 from pyannote.audio.pipelines.utils.hook import ProgressHook
 
+from decorators.all_decorators import record_performance
+
 load_dotenv()
 script_dir = ospath.dirname(ospath.realpath(__file__))
 parent_dir = ospath.join(script_dir, ospath.pardir)
 model_path = ospath.normpath(ospath.join(parent_dir, "models"))
 
 
+@record_performance
 def analyze_audio(input_file="", output_file=""):
     # print(torch.cuda.is_available())
     # return
