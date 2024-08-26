@@ -12,7 +12,6 @@ def generate_single_clip(movements_data_file, input_video, output_dir):
     with open(movements_data_file, 'r') as f:
         data = json.load(f)
 
-    # Parse data and calculate total time
     total_time_s = sum(d['to'] - d['from'] for d in data)
     print(f"Total time of all segments: {total_time_s}s")
 

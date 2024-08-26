@@ -7,7 +7,7 @@ import cv2 as cv
 import ffmpeg
 
 from .analyze_movements import analyze_movements
-from .decorators import record_performance
+from decorators.all_decorators import record_performance
 from .generate_single_clip import generate_single_clip
 
 DEFAULT_MOG2_VAR_THRESHOLD = 1000

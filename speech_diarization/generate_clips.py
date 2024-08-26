@@ -1,14 +1,20 @@
-import argparse
 import json
 import os
-import sys
 from pathlib import Path
-from decorators.all_decorators import record_performance
 
 import ffmpeg
 
+from decorators.all_decorators import record_performance
+
 ANALYZE_DURATION = '10M'
 PROBE_SIZE = '50M'
+
+
+def convert_seconds(seconds):
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    remaining_seconds = seconds % 60
+    return hours, minutes, remaining_seconds
 
 
 def parse_data(json_file_path):
@@ -21,10 +27,15 @@ def parse_data(json_file_path):
         speaker = entry['speaker']
         start = entry['start']
         stop = entry['stop']
+        duration = stop - start
+
+        if duration <= 0.3:
+            continue
+        if start > 600:
+            break
 
         if speaker not in speaker_data:
             speaker_data[speaker] = []
-
         speaker_data[speaker].append({"from": start, "to": stop})
 
     return speaker_data
@@ -32,23 +43,28 @@ def parse_data(json_file_path):
 
 def generate_clips(input_video, speaker_data, output_dir):
     for speaker, clips in speaker_data.items():
-        print(f"Generating clips for speaker {speaker} (total entries: {len(clips)})")
+        total_entries = len(clips)
+        total_duration_s = sum([clip['to'] - clip['from'] for clip in clips])
+        hours, minutes, seconds = convert_seconds(total_duration_s)
+        print(
+            f"Generating clips for speaker {speaker} (total entries: {total_entries}, total duration: {hours}h {minutes}m {seconds}s)")
 
         temp_files = []
         for i, clip in enumerate(clips):
             start = clip['from']
             stop = clip['to']
             duration = stop - start
-            temp_file = f"temp_{i}.mp4"
+            temp_file_path = Path(output_dir) / f"temp_{i}.mp4"
             ffmpeg.input(input_video, ss=start, t=duration, analyzeduration=ANALYZE_DURATION,
-                         probesize=PROBE_SIZE).output(temp_file).run()
-            temp_files.append(temp_file)
+                         probesize=PROBE_SIZE).output(str(temp_file_path)).run()
+            temp_files.append(temp_file_path)
+        print(f"Going to generate {len(temp_files)}x temp files")
 
         concat_file_path = Path(output_dir) / "concat_list.txt"
         with open(concat_file_path, 'w') as f:
-            for temp_file in temp_files:
-                f.write(f"file '{os.path.abspath(temp_file)}'\n")
-        print(f"Created temporary file: {str(concat_file_path)}")
+            for temp_file_path in temp_files:
+                f.write(f"file '{os.path.abspath(temp_file_path)}'\n")
+            print(f"Created temporary file: {str(concat_file_path)}")
 
         try:
             output_video_path = Path(output_dir) / f"{speaker}.mp4"
@@ -63,8 +79,8 @@ def generate_clips(input_video, speaker_data, output_dir):
         finally:
             # Clean up the temporary files
             os.remove(concat_file_path)
-            for temp_file in temp_files:
-                os.remove(temp_file)
+            for temp_file_path in temp_files:
+                os.remove(temp_file_path)
             print(f"Removed temporary file: {str(concat_file_path)}")
 
             if 'output_video_path' in locals():
@@ -73,30 +89,7 @@ def generate_clips(input_video, speaker_data, output_dir):
                 print(f"Process finished for speaker {speaker}")
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(description='Generate speaker clips from JSON file.')
-    parser.add_argument('--input_video', type=str, help='Path to the input video', required=True)
-    parser.add_argument('--input_json', type=str, help='Path to the input JSON data file', required=True)
-    parser.add_argument('--output_dir', type=str, help='Path to the output directory', required=True)
-    return parser.parse_args()
-
-
 @record_performance
-def process_audio_clips():
-    args = parse_args()
-    input_video = args.input_video
-    input_json = args.input_json
-    output_dir = args.output_dir
-
-    for input_path, input_name in [(input_video, 'input_video'), (input_json, 'input_json'),
-                                   (output_dir, 'output_dir')]:
-        if not Path(input_path).exists():
-            print(f"Error: The {input_name} '{input_path}' does not exist.")
-            sys.exit(1)
-
+def process_audio_clips(input_video, input_json, output_dir):
     parsed_input_json = parse_data(input_json)
     generate_clips(input_video, parsed_input_json, output_dir)
-
-
-if __name__ == "__main__":
-    process_audio_clips()

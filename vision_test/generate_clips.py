@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 import os
-from .decorators import record_performance
+from decorators.all_decorators import record_performance
 
 ANALYZE_DURATION = '10M'  # Increase analyzeduration (10 million microseconds = 10 seconds)
 PROBE_SIZE = '50M'  # Increase probesize to 50 megabytes
