@@ -37,12 +37,16 @@ def main():
             sys.exit(1)
 
         try:
+            if not Path(output_dir).exists():
+                Path(output_dir).mkdir(exist_ok=True)
             analyze_audio(input_audio, f"{output_dir}/{get_timestamp()}")
         except Exception as e:
             print(f"An error occurred while analyzing the audio: {str(e)}")
             sys.exit(1)
     elif input_video and input_json:
         try:
+            if not Path(output_dir).exists():
+                Path(output_dir).mkdir(exist_ok=True)
             process_audio_clips(input_video, input_json, output_dir)
         except Exception as e:
             print(f"An error occurred while generating audio clips: {str(e)}")
