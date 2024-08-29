@@ -44,6 +44,13 @@ def main():
             print(f"An error occurred while analyzing the audio: {str(e)}")
             sys.exit(1)
     elif input_video and input_json:
+        if not Path(input_video).exists():
+            print(f"Error: The input video file '{input_video}' does not exist.")
+            sys.exit(1)
+        if not Path(input_json).exists():
+            print(f"Error: The input JSON data file '{input_json}' does not exist.")
+            sys.exit(1)
+
         try:
             if not Path(output_dir).exists():
                 Path(output_dir).mkdir(exist_ok=True)
