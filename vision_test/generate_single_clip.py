@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import os
 from pathlib import Path
@@ -6,6 +7,10 @@ import ffmpeg
 
 ANALYZE_DURATION = '10M'  # Increase analyzeduration (10 million microseconds = 10 seconds)
 PROBE_SIZE = '50M'  # Increase probesize to 50 megabytes
+
+
+def get_timestamp():
+    return int(datetime.now().timestamp())
 
 
 def generate_single_clip(movements_data_file, input_video, output_dir):
@@ -20,7 +25,7 @@ def generate_single_clip(movements_data_file, input_video, output_dir):
     for i, d in enumerate(data):
         start_time = d['from']
         duration = d['to'] - start_time
-        temp_file = f"temp_{i}.mp4"
+        temp_file = Path(output_dir) / f"temp_{i}.mp4"
         ffmpeg.input(input_video, ss=start_time, t=duration, analyzeduration=ANALYZE_DURATION,
                      probesize=PROBE_SIZE).output(temp_file).run()
         temp_files.append(temp_file)
@@ -34,7 +39,7 @@ def generate_single_clip(movements_data_file, input_video, output_dir):
 
     try:
         # Use the concat demuxer to concatenate the segments
-        output_video_path = Path(output_dir) / "clip_merged.mp4"
+        output_video_path = Path(output_dir) / f"clip_merged_{str(get_timestamp())}.mp4"
         (ffmpeg.input(
             str(concat_file_path),
             format='concat',

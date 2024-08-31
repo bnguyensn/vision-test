@@ -68,7 +68,7 @@ def parse_args():
                         action='store_true',
                         help='If true, will try to detect shadows.',
                         default=DEFAULT_MOG2_SHADOWS)
-    parser.add_argument('--generate-clips',
+    parser.add_argument('--generateclips',
                         action='store_true',
                         help='If true, will automatically generate video clips.',
                         default=False)
@@ -118,7 +118,7 @@ def get_movements():
     print(f'Created {intensive_movements_json}')
 
     # Create video clip (if requested)
-    if args.generate_clips:
+    if args.generateclips:
         # generate_clips(intensive_movements_json, args.input, "output")
         generate_single_clip(intensive_movements_json, args.input, "output/merged_clips")
 
