@@ -1,22 +1,20 @@
 # vision-test
 
-Codebase notes:
-- We have Poetry. Install packages with [`poetry add`](https://python-poetry.org/docs/cli/#add).
-- `venv` was created using venv. Used as a local python interpreter.
-- OpenCV link: https://pypi.org/project/opencv-python/#installation-and-usage
-  - https://medium.com/analytics-vidhya/object-detection-with-opencv-step-by-step-6c49a9cc1ff0
-  - https://towardsdatascience.com/yolo-you-only-look-once-17f9280a47b0
-  - [Motion detection with background subtraction](https://docs.opencv.org/4.x/d1/dc5/tutorial_background_subtraction.html)
+A compilation of computer vision and audio diarization experiments.
 
-## Features
+## Computer vision
 
-### Background subtraction
+**Goal:** automatically find highlights within a long tennis match video.
+
+### Methodology
+
+#### Background subtraction
 
 This is used to detect motion. It consists of 2 main steps:
 - Background initialization: an initial model of the background is computed.
 - Background update: the model is updated to adapt to possible changes in the scene.
 
-### Fine-tuning
+#### Fine-tuning
 
 Parameters to fine-tune:
 - Foreground mask threshold
@@ -25,9 +23,43 @@ Parameters to fine-tune:
 - Minimum and maximum "heavy movement" segment length
 - Frame rate
 
-## How to use
+### The program
 
-### IDE
+Run the main program using `poetry run run-vision-test`. This script is defined in `pyproject.toml`.
+
+You can provide arguments to the program. All arguments are optional.
+
+```bash
+# Run the program on 'path/to/input.mp4' video, with a movement threshold of 1000.
+$ poetry run run-vision-test --input "data/video.mp4" --mvmt 1000 --history 500 --shadows --generate-clips
+```
+
+## Audio diarization
+
+**Goal:** automatically cut a video into smaller videos containing only the speech of an individual.
+
+### The program
+
+Run the main program like this:
+
+```
+# Run audio diarization on a WAV file.
+$ poetry run analyze-audio --input_audio "data/audio/AllIn193-jSpGiFqL8_E.wav" --output_dir "output/analyze_audio/AllIn193-jSpGiFqL8_E"
+
+# Generate clips from the generated diarization data and the original video.
+$ poetry run analyze-audio --input_video "data/video/AllIn193-jSpGiFqL8_E.mp4" --input_json "output/analyze_audio/AllIn193-jSpGiFqL8_E/1724625939.json" --output_dir "output/analyze_audio/AllIn193-jSpGiFqL8_E"
+```
+
+## Codebase notes
+
+We have Poetry. Install packages with [`poetry add`](https://python-poetry.org/docs/cli/#add).
+
+`venv` was created using venv. Used as a local python interpreter.
+
+OpenCV link: https://pypi.org/project/opencv-python/#installation-and-usage
+- https://medium.com/analytics-vidhya/object-detection-with-opencv-step-by-step-6c49a9cc1ff0
+- https://towardsdatascience.com/yolo-you-only-look-once-17f9280a47b0
+- [Motion detection with background subtraction](https://docs.opencv.org/4.x/d1/dc5/tutorial_background_subtraction.html)
 
 If using PyCharm, make sure you set up your Python interpreter so that the IDE correctly detects your packages. See [here](https://www.jetbrains.com/help/pycharm/package-installation-issues.html#terminal).
 
@@ -60,36 +92,23 @@ $ poetry source add --priority=explicit pytorch-gpu-src https://download.pytorch
 $ poetry add --source pytorch-gpu-src torch torchvision torchaudio
 ```
 
-### The main program
-
-Run the main program using `poetry run run-vision-test`. This script is defined in `pyproject.toml`.
-
-You can provide arguments to the program. All arguments are optional.
-
-```bash
-# Run the program on 'path/to/input.mp4' video, with a movement threshold of 1000.
-$ poetry run run-vision-test --input "data/video.mp4" --mvmt 1000 --history 500 --shadows --generate-clips
-```
-
 ## Deployment
 
 This service is meant to be triggered whenever there is a new long-form video uploaded to storage. The trigger is handled via main.py using GCP's `functions_framework`, as this is deployed as a Google Cloud Function.
 
-## Miscellaneous
-
-### CV playground
+## CV playground
 
 Try this command:
 
-```bash
+```
 $ poetry run cv-playground
 ```
 
-### `ffmpeg`
+## `ffmpeg`
 
-#### Trimming a video
+### Trimming a video
 
-```bash
+```
 # -i: input file
 # -ss: start time
 # -t: duration
