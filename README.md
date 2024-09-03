@@ -50,6 +50,12 @@ $ poetry run analyze-audio --input_audio "data/audio/AllIn193-jSpGiFqL8_E.wav" -
 $ poetry run analyze-audio --input_video "data/video/AllIn193-jSpGiFqL8_E.mp4" --input_json "output/analyze_audio/AllIn193-jSpGiFqL8_E/1724625939.json" --output_dir "output/analyze_audio/AllIn193-jSpGiFqL8_E"
 ```
 
+### Methodology
+
+The model: `pyannote/speaker-diarization-3.1`
+
+There is a quirk. Accuracy drops noticeably when diarizing long-duration files. Thus, the approach is to **split the file out** into 10-minute segments, and run diarization on those. Once the JSON results is obtained, we combine them to make a final JSON result file, before generate the combined video.
+
 ## Codebase notes
 
 We have Poetry. Install packages with [`poetry add`](https://python-poetry.org/docs/cli/#add).
