@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 
 from speech_diarization.analyze_audio import analyze_audio
+from speech_diarization.dir_has_wav_files import contains_wav_files
 from speech_diarization.generate_clips import process_audio_clips
 
 
@@ -52,6 +53,10 @@ def main():
     elif input_audio_dir:
         if not Path(input_audio_dir).exists():
             print(f"Error: The input directory '{input_audio_dir}' does not exist.")
+            sys.exit(1)
+
+        if not contains_wav_files(input_audio_dir):
+            print(f"Error: The input directory '{input_audio_dir}' does not contain any WAV files.")
             sys.exit(1)
 
         try:
