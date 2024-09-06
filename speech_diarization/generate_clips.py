@@ -42,6 +42,13 @@ def parse_data(json_file_path):
 
 
 def generate_clips(input_video, speaker_data, output_dir):
+    if os.path.isfile(input_video):
+        print(f"Input is a file: {input_video}")
+    elif input_video.is_dir():
+        print(f"{input_video} is a directory of files")
+    else:
+        print(f"Input is neither a file nor a directory: {input_video}")
+
     for speaker, clips in speaker_data.items():
         total_entries = len(clips)
         total_duration_s = sum([clip['to'] - clip['from'] for clip in clips])
